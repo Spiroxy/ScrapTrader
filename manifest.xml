@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PluginManifest>
+  <Name>ScrapTrader</Name>
+  <Guid>b7e4f2a1-3c8d-4e90-a5b6-d1234567890f</Guid>
+  <Version>1.2.0</Version>
+  <Author>SpiroGames</Author>
+  <EntryPoint>ScrapTrader.ScrapTraderPlugin</EntryPoint>
+</PluginManifest>

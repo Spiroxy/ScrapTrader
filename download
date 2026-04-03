@@ -1,0 +1,23 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Compiled files
+*.dll
+*.pdb
+*.exe
+
+# NuGet
+packages/
+*.nupkg
+
+# OS
+.DS_Store
+Thumbs.db
