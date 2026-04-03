@@ -9,7 +9,7 @@ Players can sell their ships to the station for Space Credits based on block con
 ## Requirements
 
 - [Torch Server](https://torchapi.com/)
-- ScrapTrader Blocks mod on Steam Workshop (required for prefab spawning)
+- ScrapTrader Blocks mod on [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3697952026) (required for prefab spawning)
 
 ---
 
