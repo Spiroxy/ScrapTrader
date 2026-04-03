@@ -33,11 +33,25 @@ Players can sell their ships to the station for Space Credits based on block con
 
 ## Station Setup
 
-Build an NPC station owned by an allowed faction (configured in `ScrapTrader.cfg`) and add:
+Build an NPC station owned by an allowed faction (configured in `ScrapTrader.cfg`) and add the following blocks:
 
-- A connector named **`ScrapTrader Connector Planet`** for planet stations
-- A connector named **`ScrapTrader Connector Space`** for space stations
-- An LCD panel named **`ScrapTrader Inventory`** to display available items
+**Required:**
+| Block | Name |
+|---|---|
+| Connector | `ScrapTrader Connector Planet` (planet station) |
+| Connector | `ScrapTrader Connector Space` (space station) |
+
+**Optional:**
+| Block | Purpose |
+|---|---|
+| LCD Panel named `ScrapTrader Inventory` | Displays random items for sale |
+| Store Block | NPC economy integration |
+| Safe Zone | Protects the station from griefing |
+| Beacon | Helps players locate the station |
+
+**Default allowed faction leaders:** Military, The Ferryman, Prime Broker
+
+A station can have both connector types if needed. The LCD panel displays a random selection of available items and refreshes every 15 minutes.
 
 ---
 
