@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>ScrapTraderPlugin</AssemblyName>
+    <RootNamespace>ScrapTrader</RootNamespace>
+    <Nullable>enable</Nullable>
+    <LangVersion>8.0</LangVersion>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TorchPath>C:\Space\Test</TorchPath>
+    <SEPath>C:\Space\Test\DedicatedServer64</SEPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Torch">
+      <HintPath>$(TorchPath)\Torch.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Torch.API">
+      <HintPath>$(TorchPath)\Torch.API.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Torch.Server">
+      <HintPath>$(TorchPath)\Torch.Server.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>$(TorchPath)\NLog.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Sandbox.Common">
+      <HintPath>$(SEPath)\Sandbox.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Sandbox.Game">
+      <HintPath>$(SEPath)\Sandbox.Game.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage">
+      <HintPath>$(SEPath)\VRage.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Game">
+      <HintPath>$(SEPath)\VRage.Game.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Math">
+      <HintPath>$(SEPath)\VRage.Math.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VRage.Library">
+      <HintPath>$(SEPath)\VRage.Library.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SpaceEngineers.Game">
+      <HintPath>$(SEPath)\SpaceEngineers.Game.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="manifest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
