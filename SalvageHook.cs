@@ -96,8 +96,8 @@ namespace ScrapTrader
 
                 // Check if this Services Terminal is on a ScrapTrader-allowed station
                 // Get the block entity from __instance
-                var entityProp = __instance.GetType().GetProperty("Entity");
-                if (entityProp == null) entityProp = __instance.GetType().GetProperty("Container");
+                var entityProp = __instance.GetType().GetProperty("Entity") ??
+                                 __instance.GetType().GetProperty("Container");
                 if (entityProp == null) return;
 
                 var entity = entityProp.GetValue(__instance);
@@ -128,7 +128,6 @@ namespace ScrapTrader
                 if (economyType == null) return null;
 
                 var staticProp = economyType.GetProperty("Static");
-                if (staticProp == null) return null;
 
                 // Alternative: find any existing MySalvageServiceComponent that has a valid station
                 var allEntities = Sandbox.Game.Entities.MyEntities.GetEntities();
@@ -140,11 +139,7 @@ namespace ScrapTrader
                         var components = block.Components;
                         if (components == null) continue;
 
-                        object salvageComp = null;
-                        try {
-                            var getMethod = components.GetType().GetMethod("Get", new[] { typeof(System.Type) });
-                            if (getMethod != null) salvageComp = getMethod.Invoke(components, new object[] { _salvageType });
-                        } catch { }
+                        var salvageComp = _salvageType != null ? components.GetType().GetMethod("Get")?.MakeGenericMethod(_salvageType)?.Invoke(components, null) : null;
                         if (salvageComp == null) continue;
 
                         var getStation = _salvageType.GetMethod("GetStation",

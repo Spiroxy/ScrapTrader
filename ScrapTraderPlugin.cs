@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using NLog;
 using Torch;
@@ -14,27 +15,40 @@ namespace ScrapTrader
         public static ScrapTraderPlugin Instance { get; private set; }
 
         public ScrapTraderConfig Config { get; private set; }
+        public InventoryManager Inventory { get; private set; }
+        public TradeableBlocksConfig TradeableBlocks { get; private set; }
 
+        private LcdManager _lcdManager;
+        private BuyManager _buyManager;
         private GridEvaluator _evaluator;
         private StationRegistrar _stationRegistrar;
         private bool _commandsRegistered = false;
-        private string _storagePath;
+        private string _worldStoragePath;
 
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
             Instance = this;
 
-            _storagePath = Path.Combine(StoragePath, "ScrapTrader");
-            Directory.CreateDirectory(_storagePath);
+            _worldStoragePath = Path.Combine(StoragePath, "Saves", "SpiroGames-ScrapBound", "Storage", "ScrapTrader");
+            Directory.CreateDirectory(_worldStoragePath);
 
-            var configPath = Path.Combine(_storagePath, "ScrapTrader.cfg");
+            Log.Info($"ScrapTrader v1.2 storage path: {_worldStoragePath}");
+
+            var configPath = Path.Combine(_worldStoragePath, "ScrapTrader.cfg");
             Config = ScrapTraderConfig.Load(configPath);
 
+            var tradeablePath = Path.Combine(_worldStoragePath, "TradeableBlocks.xml");
+            TradeableBlocks = TradeableBlocksConfig.Load(tradeablePath);
+
+            Inventory = new InventoryManager(_worldStoragePath);
+
             _evaluator = new GridEvaluator(Config);
+            _lcdManager = new LcdManager(Config, Inventory);
+            _buyManager = new BuyManager(Config, Inventory, TradeableBlocks);
             _stationRegistrar = new StationRegistrar(Config);
 
-            Log.Info("ScrapTrader v1.3 loaded.");
+            Log.Info("ScrapTrader v1.3 plugin loaded.");
 
             var sessionManager = torch.Managers.GetManager(typeof(ITorchSessionManager)) as ITorchSessionManager;
             if (sessionManager != null)
@@ -48,38 +62,49 @@ namespace ScrapTrader
                 var commandManager = session.Managers.GetManager(typeof(Torch.Commands.CommandManager)) as Torch.Commands.CommandManager;
                 if (commandManager != null)
                 {
+                    commandManager.RegisterCommandModule(typeof(ScrapCommands));
                     commandManager.RegisterCommandModule(typeof(ScrapAdminCommands));
                     _commandsRegistered = true;
                     Log.Info("ScrapTrader commands registered.");
                 }
 
                 _evaluator.BuildPriceCache();
+                Inventory.RestockFromConfig(TradeableBlocks, _evaluator);
+                _lcdManager.ForceUpdate();
                 SalvageHook.Apply();
-                _stationRegistrar.RegisterAllStations();
+                _updateTick = 0;
             }
 
             if (state == TorchSessionState.Unloading)
                 _commandsRegistered = false;
         }
 
+        public BuyManager GetBuyManager() => _buyManager;
+        public LcdManager GetLcdManager() => _lcdManager;
+        public GridEvaluator GetEvaluator() => _evaluator;
+        public StationRegistrar GetStationRegistrar() => _stationRegistrar;
+
         private int _updateTick = 0;
-        private const int STATION_REGISTER_INTERVAL = 60 * 60 * 5;
+        private const int STATION_REGISTER_INTERVAL = 60 * 60 * 5; // ~5 minutes at 60 ticks/sec
 
         public override void Update()
         {
+            _lcdManager?.Update();
             _updateTick++;
+
+            // Register stations periodically
             if (_updateTick % STATION_REGISTER_INTERVAL == 0)
+            {
                 _stationRegistrar.RegisterAllStations();
+            }
         }
 
         public override void Dispose()
         {
-            Config?.Save(Path.Combine(_storagePath, "ScrapTrader.cfg"));
-            Log.Info("ScrapTrader v1.3 unloaded.");
+            Config?.Save(Path.Combine(_worldStoragePath, "ScrapTrader.cfg"));
+            Log.Info("ScrapTrader v1.3 plugin unloaded.");
         }
 
-        public void SaveConfig() => Config?.Save(Path.Combine(_storagePath, "ScrapTrader.cfg"));
-        public StationRegistrar GetStationRegistrar() => _stationRegistrar;
-        public GridEvaluator GetEvaluator() => _evaluator;
+        public void SaveConfig() => Config?.Save(Path.Combine(_worldStoragePath, "ScrapTrader.cfg"));
     }
 }

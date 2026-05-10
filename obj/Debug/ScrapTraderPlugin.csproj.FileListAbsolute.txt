@@ -1,0 +1,10 @@
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\obj\Debug\ScrapTraderPlugin.csproj.AssemblyReference.cache
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\obj\Debug\ScrapTraderPlugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\obj\Debug\ScrapTraderPlugin.AssemblyInfoInputs.cache
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\obj\Debug\ScrapTraderPlugin.AssemblyInfo.cs
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\obj\Debug\ScrapTraderPlugin.csproj.CoreCompileInputs.cache
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\bin\Debug\manifest.xml
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\bin\Debug\ScrapTraderPlugin.dll
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\bin\Debug\ScrapTraderPlugin.pdb
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\obj\Debug\ScrapTraderPlugin.dll
+C:\studio\ScrapTraderPlugin_v1.3_20\ScrapTraderPlugin_v1.3\obj\Debug\ScrapTraderPlugin.pdb
