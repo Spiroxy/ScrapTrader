@@ -1,135 +1,99 @@
 # ScrapTrader
 
-A Torch server-side economy plugin for Space Engineers that turns NPC stations into dynamic scrap markets.
+A server-side Torch plugin for Space Engineers that enables the Salvage and Repair functions of the new Services Terminal block on NPC trade stations.
 
-Players can sell their ships to the station for Space Credits based on block condition and component value. The station maintains a restocking inventory of salvaged blocks available for purchase, refreshed on every server restart.
+Built to work alongside [NPC Provider (Bookburner's mod)](https://steamcommunity.com/sharedfiles/filedetails/?id=3099943209).
+
+---
+
+## Features
+
+- Sell ships to NPC stations for Space Credits via the **Salvage** service
+- Repair damaged ships at NPC stations via the **Repair** service
+- Payout and cost calculated from vanilla component prices
+- Station detection based on grid name and SafeZone proximity
+- Supports planet and space station connectors separately
 
 ---
 
 ## Requirements
 
 - [Torch Server](https://torchapi.com/)
-- ScrapTrader Blocks mod on [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3697952026) (required for prefab spawning)
+- [NPC Provider (Bookburner's mod)](https://steamcommunity.com/sharedfiles/filedetails/?id=3099943209)
 
 ---
 
 ## Installation
 
-1. Download the latest release zip
-2. Place the zip in your Torch `Plugins` folder
-3. Add the plugin GUID to `torch.cfg`:
-   ```xml
-   <Plugins>
-     <guid>b7e4f2a1-3c8d-4e90-a5b6-d1234567890f</guid>
-   </Plugins>
-   ```
-4. Add the ScrapTrader Blocks mod to your world
-5. Start Torch – config files are generated automatically in:
-   ```
-   Instance\Saves\<WorldName>\Storage\ScrapTrader\
-   ```
+1. Download the latest release from the [Releases](https://github.com/Spiroxy/ScrapTrader/releases) page
+2. Extract the plugin folder into your Torch `Plugins` directory
+3. Enable the plugin in Torch and restart the server
 
 ---
 
 ## Station Setup
 
-Build an NPC station owned by an allowed faction (configured in `ScrapTrader.cfg`) and add the following blocks:
+ScrapTrader identifies valid NPC economy stations by two criteria:
 
-**Required:**
-| Block | Name |
+**1. Grid name** must contain:
+```
+(NPC-ECONOMY)
+```
+
+**2. A SafeZone** named with the prefix:
+```
+SZ:(NPC-ECONOMY)
+```
+must exist within **2000m** of the station.
+
+**3. Connectors** on the station grid must be named:
+```
+ScrapTrader Connector Planet
+```
+or
+```
+ScrapTrader Connector Space
+```
+
+The player interacts with the **Services Terminal** on the station. The terminal lists ships owned by the player that are within the SafeZone — dynamic grids only, not static. The player selects a ship and confirms the transaction.
+
+---
+
+## Commands
+
+| Command | Description |
 |---|---|
-| Connector | `ScrapTrader Connector Planet` (planet station) |
-| Connector | `ScrapTrader Connector Space` (space station) |
-
-**Optional:**
-| Block | Purpose |
-|---|---|
-| LCD Panel named `ScrapTrader Inventory` | Displays random items for sale |
-| Store Block | NPC economy integration |
-| Safe Zone | Protects the station from griefing |
-| Beacon | Helps players locate the station |
-
-**Default allowed faction leaders:** Military, The Ferryman, Prime Broker
-
-A station can have both connector types if needed. The LCD panel displays a random selection of available items and refreshes every 15 minutes.
+| `!scraptrader registerstations` | Manually scans and registers all valid NPC economy stations |
 
 ---
 
 ## Configuration
 
-### ScrapTrader.cfg
+Configuration is stored in `ScrapTrader.cfg` in the plugin directory.
+
 | Setting | Default | Description |
 |---|---|---|
-| `GlobalPriceMultiplier` | 0.7 | Station cut on purchases (0.7 = 30% cut) |
-| `InteractionRange` | 50 | Max distance to buy (meters) |
-| `SpawnDistanceFromConnector` | 15 | Spawn distance for purchased items (meters) |
-| `LcdUpdateIntervalSeconds` | 900 | LCD refresh interval (seconds) |
-| `DisplayItemCount` | 5 | Number of random items shown per cycle |
-| `AllowedStationFactions` | Military, The Ferryman, Prime Broker | Factions that can own ScrapTrader stations |
+| `SalvageFeePercent` | `0.30` | Station fee deducted from salvage payout (30%) |
+| `RepairFeePercent` | `0.40` | Station markup added to repair cost (40%) |
 
-### TradeableBlocks.xml
-Defines which blocks are available in the station inventory.
-
-```xml
-<Block type="LargeAssembler"
-       sellMultiplier="1.4"
-       prefab="ScrapTrader_Assembler_20"
-       maxStock="1"
-       stationType="Any"/>
-```
-
-| Attribute | Description |
-|---|---|
-| `type` | Block SubtypeId |
-| `sellMultiplier` | Price multiplier for buyers (1.4 = 40% markup) |
-| `prefab` | Prefab Subtype from the ScrapTrader Blocks mod |
-| `maxStock` | Max items of this type restocked per server restart |
-| `stationType` | `Any`, `Space` or `Planet` |
-
----
-
-## Player Commands
-
-| Command | Description |
-|---|---|
-| `!scrap sell` | Evaluate and sell your docked ship |
-| `!scrap confirm` | Accept the offer |
-| `!scrap cancel` | Decline the offer |
-| `!scrap list` | Show available items (must be within 100m of station) |
-| `!scrap buy <ID>` | Purchase an item by ID |
-| `!scrap help` | Show help |
-
----
-
-## Admin Commands
-
-| Command | Description |
-|---|---|
-| `!scraptrader status` | Show plugin status and inventory count |
-| `!scraptrader restock` | Manually trigger inventory restock |
-| `!scraptrader clearinventory` | Clear all items from inventory |
-| `!scraptrader updatelcd` | Force update all LCD panels |
-| `!scraptrader multiplier <X>` | Set global price multiplier (0.0-1.0) |
+Prices are calculated from vanilla Space Engineers component values.
 
 ---
 
 ## How It Works
 
-**Selling:**
-- Dock your ship to a ScrapTrader connector
-- Run `!scrap sell` to get an offer based on block condition and component value
-- Run `!scrap confirm` to accept – you receive Space Credits and the ship is scrapped
+1. Player opens the **Services Terminal** on the station
+2. The terminal lists ships owned by the player within the SafeZone — dynamic grids only, not static
+3. **Salvage** — the plugin evaluates the ship's components and condition, calculates a payout minus the station fee, and pays the player in Space Credits upon confirmation
+4. **Repair** — the plugin calculates the cost to restore missing components, adds the station markup, and charges the player upon confirmation
 
-**Buying:**
-- Stand within 100m of a ScrapTrader station
-- Run `!scrap list` to see available items (filtered by station type)
-- Run `!scrap buy <ID>` to purchase – the item spawns 15m in front of the connector
+---
 
-**Inventory:**
-- Station inventory is defined in `TradeableBlocks.xml`
-- Inventory restocks to `maxStock` on every server restart
-- Items sold by players do not restock the inventory
-- LCD panels show 5 random items, refreshed every 15 minutes
+## Plugin GUID
+
+```
+b7e4f2a1-3c8d-4e90-a5b6-d1234567890f
+```
 
 ---
 
